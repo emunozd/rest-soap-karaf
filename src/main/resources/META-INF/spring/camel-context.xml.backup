@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:cxf="http://camel.apache.org/schema/cxf" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:osgi="http://www.springframework.org/schema/osgi" xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+       http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+	
+	
+	<!-- In Fuse ESB, every persistentID, 
+		is implicitly associated with a file named com.avianca.bus.cfg in the $FUSE_HOME/etc/ 
+		directory. -->  
+	<osgix:cm-properties id="properties" persistent-id="com.avianca.bus">
+	</osgix:cm-properties>
+	
+	<context:property-placeholder properties-ref="properties" />
+	<context:annotation-config />
+	
+	
+	<!-- this is the JDBC data source which uses an in-memory only Apache Derby database -->
+<!--    <bean id="dsTeiid" class="org.teiid.jdbc.TeiidDataSource"> -->
+<!--       <property name="serverName" value="localhost"/> -->
+<!--       <property name="portNumber" value="31000"/> -->
+<!--       <property name="databaseName" value="person"/> -->
+<!--       <property name="user" value="person"/> -->
+<!--       <property name="password" value="jboss_2015"/> -->
+<!--   </bean>   -->
+  
+<!--   <bean id="dsTeiid" class="org.teiid.jdbc.TeiidDataSource"> -->
+<!--       <property name="serverName" value="${teiid.hostName}"/> -->
+<!--       <property name="portNumber" value="${teiid.port}"/> -->
+<!--       <property name="databaseName" value="${teiid.VDB}"/> -->
+<!--       <property name="user" value="${teiid.user}"/> -->
+<!--       <property name="password" value="${teiid.pass}"/> -->
+<!--   </bean>   -->
+  
+<!--   <bean id="entityManagerFactory" -->
+<!-- 	class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> -->
+<!-- 	<property name="dataSource" ref="dsTeiid" /> -->
+<!-- 	<property name="persistenceUnitName" value="testVDB" /> -->
+<!-- </bean> -->
+
+<!-- <bean id="jpa" class="org.apache.camel.component.jpa.JpaComponent"> -->
+<!-- 	<property name="entityManagerFactory" ref="entityManagerFactory" /> -->
+<!-- </bean> -->
+  
+	<!-- </routes> -->
+	<!--   PARA USAR QUERY DENTRO DE RUTA --><!--     <from uri="file:/home/emunoz/avianca/disparar"/> --><!--     <pollEnrich uri="sql:select * from person.view_people.PERSONA?dataSource=dsTeiid&amp;consumer.useIterator=false&amp;outputClass=com.avianca.ods.model.Persona" /> --><!--     <split parallelProcessing="true" streaming="true" parallelAggregate="false"> --><!--       <simple>${body}</simple> --><!-- 	  <log message="resultado: ${body.nombres}"/> --><!--     </split> --><!-- 	PARA USAR QUERY NOMBRADA --><!--     	<from uri="jpa:com.avianca.ods.model.Persona?consumer.namedQuery=personAll&amp;consumeDelete=false"/> --><!-- 		<log message="resultado query nombrada: ${body.nombres}"/> --><!-- 	PARA USAR QUERY CON PROPERTIES --><!--   PARA USAR QUERY DENTRO DE RUTA --><!--     <from uri="file:/home/emunoz/avianca/disparar"/> --><!--     <pollEnrich uri="sql:select * from person.view_people.PERSONA?dataSource=dsTeiid&amp;consumer.useIterator=false&amp;outputClass=com.avianca.ods.model.Persona" /> --><!--     <split parallelProcessing="true" streaming="true" parallelAggregate="false"> --><!--       <simple>${body}</simple> --><!-- 	  <log message="resultado: ${body.nombres}"/> --><!--     </split> --><!-- 	PARA USAR QUERY NOMBRADA --><!--     	<from uri="jpa:com.avianca.ods.model.Persona?consumer.namedQuery=personAll&amp;consumeDelete=false"/> --><!-- 		<log message="resultado query nombrada: ${body.nombres}"/> --><!-- 	PARA USAR QUERY CON PROPERTIES --><!--     <bean ref="paramsp" method="put('documento',${header.elkinValue})"/> --><!--     <pollEnrich uri="jpa:com.avianca.ods.model.Persona?consumer.query=select p from Persona p where p.id={{nq.consultaId}}&amp;consumeDelete=false"/> --><!--     <pollEnrich uri="jpa:com.avianca.ods.model.Persona?consumer.query=select p from Persona p where p.documento=:documento&amp;consumeDelete=false&amp;consumer.parameters=#paramsp"/> --><!--     <log message="resultado query properties: ${body.nombres}"/> -->
+	<camelContext id="TopicCamel" xmlns="http://camel.apache.org/schema/spring">
+  <propertyPlaceholder location="ref:properties" id="camelProperties"/>
+  <route id="rutaTopic">
+  	<from uri="file:{{bif.directory}}"/>
+    <to uri="activemq:topic:ejemplotopic"/>
+  </route>
+</camelContext>
+<!-- <bean id="aggregatorStrategy" class="com.avianca.ods.service.Aggregation"/> -->
+<!-- <bean id="paramsp" class="java.util.HashMap" /> -->
+	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+	<bean id="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616" />
+        <property name="userName" value="admin"/>
+		<property name="password" value="admin"/>
+	</bean>
+</beans>
