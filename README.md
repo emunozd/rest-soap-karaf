@@ -42,6 +42,16 @@ mvn clean install
 
 ./bin/fuse
 
+5) Install the following features:
+
+features:install camel-jackson
+features:install camel-jetty
+features:install camel-servlet
+features:install camel-restlet
+features:install cxf-jaxws
+features:install cxf-jaxrs
+features:install cxf
+
 Usage
 -----
 
