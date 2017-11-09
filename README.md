@@ -52,7 +52,7 @@ Usage
 * path=/example
 
 2) Set a response message for the mock service operation "NewOperation", for example:
-
+```xml
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:per="http://example.com/Person/">
    <soapenv:Header/>
    <soapenv:Body>
@@ -61,23 +61,23 @@ Usage
       </per:NewOperationResponse>
    </soapenv:Body>
 </soapenv:Envelope>
-
+```
 3) Deploy the artifact in the JBoss Fuse 6.3 server
 
 4) Open a rest client, like postman, and send a POST request to the URL: http://0.0.0.0:8282/rest/example/personRest with the following raw XML(application/xml) payload:
-
+```xml
 <ns2:NewOperation xmlns:ns2="http://example.com/Person/">
 <person>
 	<name>Example</name>
 	<document>1234</document>
 </person>
 </ns2:NewOperation>
-
+```
 5) Response must be like following:
-
+```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:NewOperationResponse xmlns:ns2="http://example.com/Person/">
     <out>Hello</out>
 </ns2:NewOperationResponse>
-
+```
 Done.
